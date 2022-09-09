@@ -1,0 +1,64 @@
+name: Teho Promoter Application Android (Test)
+
+on:
+  push:
+    branches: [ test ]
+
+jobs: 
+  build:
+    name: Build APK
+    needs: []
+    runs-on: ubuntu-latest
+    steps: 
+    - uses: actions/checkout@v3
+    - name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.0.5'
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Build APK
+      run: flutter build apk --release
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with: 
+        name: apk
+        path: build/app/outputs/apk/release/app-release.apk
+
+  deploy:
+    needs: build
+    name: Distribute for Alpha Testing
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Download latest artifact
+        id: download
+        uses: actions/download-artifact@v3
+        with:
+          name: apk
+      - name: Display structure of downloaded files
+        run: ls -R
+
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
+
+      - name: Upload to App Center
+        uses: wzieba/AppCenter-Github-Action@v1
+        with: 
+          appName: ${{ secrets.APP_CENTER_APP_NAME }}
+          token: ${{ secrets.APP_CENTER_TOKEN }}
+          group: AlphaTesters
+          file: ${{steps.download.outputs.download-path}}/app-release.apk
+          notifyTesters: true
+          debug: true
+
+
+
