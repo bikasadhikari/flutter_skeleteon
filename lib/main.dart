@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:teho_controller/constants/Palette.dart';
 import 'package:teho_controller/constants/globals.dart';
+import 'package:teho_controller/ui/auth/login_screen.dart';
 import 'package:teho_controller/utils/routes/routes.dart';
 
 void main() {
@@ -33,7 +34,7 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Palette.primarySwatch,
       ),
       onGenerateRoute: (settings) => generateRoute(settings),
-      home: const Text('Hello world!'),
+      home: const LoginScreen(),
     );
   }
 }
